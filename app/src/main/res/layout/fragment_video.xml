@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".showVideo.VideoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/videoViewPager"
         android:layout_width="match_parent"

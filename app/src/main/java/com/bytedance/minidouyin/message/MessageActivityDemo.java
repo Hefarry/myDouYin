@@ -26,10 +26,6 @@ import java.util.List;
 public class MessageActivityDemo extends AppCompatActivity {
     private static final String TAG = "EXE3";
     public ListView messageList;
-    public ViewGroup fances;
-    public ViewGroup zan;
-    public ViewGroup me;
-    public ViewGroup comment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,14 +45,6 @@ public class MessageActivityDemo extends AppCompatActivity {
                 onClick1(i);
             }
         });
-        fances = findViewById(R.id.fances);
-        zan = findViewById(R.id.zan);
-        me = findViewById(R.id.callMy);
-        comment = findViewById(R.id.comment);
-        setOnClickForVG(fances);
-        setOnClickForVG(zan);
-        setOnClickForVG(me);
-        setOnClickForVG(comment);
     }
 
     public void setOnClickForVG(ViewGroup viewGroup){

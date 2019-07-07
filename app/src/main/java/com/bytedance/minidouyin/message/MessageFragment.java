@@ -6,50 +6,51 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.bytedance.minidouyin.R;
+import com.bytedance.minidouyin.bean.Feed;
+import com.bytedance.minidouyin.newtork.FetchFeedThreads;
+import com.bytedance.minidouyin.showVideo.VideoFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MessageFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MessageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class MessageFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "Fragment";
+    public ListView messageList;
+    private ListViewAdapter adapter;
+    private List<Feed>feedList = new ArrayList<>();
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
+    private class MyHandler extends Handler {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            super.handleMessage(msg);
+            if(msg.what== FetchFeedThreads.FETCH_BACK){
+                feedList = FetchFeedThreads.getInstance().getList();
+                adapter.setArgs(feedList);
+                adapter.notifyDataSetChanged();
+                Log.d(TAG, "handleMessage: "+feedList.size());
+            }
+        }
+    }
+    private Handler handler = new MessageFragment.MyHandler();
 
     public MessageFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MessageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MessageFragment newInstance(String param1, String param2) {
+    public static MessageFragment newInstance() {
         MessageFragment fragment = new MessageFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,55 +58,96 @@ public class MessageFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_message, container, false);
+        View v= inflater.inflate(R.layout.fragment_message, container, false);
+        adapter=new ListViewAdapter(getActivity(),feedList);
+        messageList = v.findViewById(R.id.messageList);
+        messageList.setAdapter(adapter);
+        FetchFeedThreads.getInstance().fetch_request(handler);
+        messageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            }
+        });
+        Log.d(TAG, "onCreateView: ");
+        return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public class ListViewAdapter extends BaseAdapter {
+        private List<Feed> args;
+        private Context context;
+
+        public void setArgs(List<Feed> list){
+            args=list;
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            Log.d(TAG, "notifyDataSetChanged: "+args.size());
+            super.notifyDataSetChanged();
+        }
+
+        public ListViewAdapter(Context c, List<Feed> args){
+            context=c;
+            this.args = args;
+        }
+
+        @Override
+        public int getCount() {
+            return args.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return args.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        public void renewView(ViewGroup view,Feed msg){
+            //ViewGroup iconLayout = (ViewGroup)view.getChildAt(0);
+            //CircleImageView img = (CircleImageView)iconLayout.getChildAt(0);
+            TextView title = (TextView)view.getChildAt(1);
+            title.setText(msg.getName());
+            TextView des = (TextView)view.getChildAt(2);
+            des.setText(msg.getStudentID());
+            TextView time = (TextView)view.getChildAt(3);
+            time.setText(msg.getUpdatedAt());
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            View v = null;
+            Feed msg = args.get(i);
+            if(view==null) {
+                ViewGroup inf = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.im_list_item,null);
+                renewView(inf,msg);
+                v=inf;
+            }else{
+                renewView((ViewGroup)view,msg);
+                v = view;
+            }
+            return v;
+        }
     }
+
 }
