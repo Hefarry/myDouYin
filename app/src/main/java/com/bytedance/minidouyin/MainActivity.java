@@ -2,6 +2,8 @@ package com.bytedance.minidouyin;
 
 import android.os.Bundle;
 
+import com.bytedance.minidouyin.showVideo.VideoFragment;
+import com.bytedance.minidouyin.showVideo.VideoPlayFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
         mTextMessage = findViewById(R.id.message);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        VideoFragment videoPlayFragment = VideoFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(
+                R.id.palceholder,videoPlayFragment).commit();
     }
 
 }

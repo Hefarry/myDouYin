@@ -25,7 +25,6 @@ import com.bytedance.minidouyin.R;
 public class VideoPlayFragment extends Fragment {
     public static final String TAG = "VideoPlayFragment";
     private Uri resource;
-    private int progess=0;
 
     private SurfaceView surfaceView;
 
@@ -42,7 +41,6 @@ public class VideoPlayFragment extends Fragment {
                 double cur = mediaPlayer.getCurrentPosition();
                 double len = mediaPlayer.getDuration();
                 double process = cur/len*100.0;
-                progess=(int)process;
                 seekBar.setProgress((int)process);
                 handler.removeMessages(REFRESH_PROCGRESS);
                 handler.sendMessageDelayed(Message.obtain(handler,REFRESH_PROCGRESS),
@@ -55,14 +53,6 @@ public class VideoPlayFragment extends Fragment {
     private int mScreenHeight;
 
     public VideoPlayFragment() {
-    }
-
-    public void setProgess(int p){
-        progess = p;
-    }
-
-    public int getProgess(){
-        return progess;
     }
 
 
@@ -127,7 +117,6 @@ public class VideoPlayFragment extends Fragment {
                 if(!fromUser){
                     return;
                 }
-                Log.d(TAG, "onProgressChanged: FromUser");
                 double len = mediaPlayer.getDuration();
                 double cur = (progress*len/100.0);
                 mediaPlayer.seekTo((int)cur);
@@ -144,26 +133,17 @@ public class VideoPlayFragment extends Fragment {
 
         try {
             if(resource!=null) {
+                Log.d(TAG, "onCreateView: "+resource);
                 mediaPlayer.setDataSource(getActivity(), resource);
             }
             surfaceView.getHolder().addCallback(new PlayerCallBack());
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    Log.d(TAG, "onPrepared: start progess="+progess);
                     fit();
-                    mediaPlayer.start();
                     checkBox.setChecked(false);
-                    double len = mediaPlayer.getDuration();
-                    double cur = progess/100.0*len;
-                    mediaPlayer.seekTo((int)cur);
-                    seekBar.setProgress((int)progess);
-                }
-            });
-            mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-                @Override
-                public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                    Log.d(TAG, "onBufferingUpdate: ");
+                    mediaPlayer.start();
+                    Log.d(TAG, "onPrepared: mediaPlayer started");
                 }
             });
             mediaPlayer.prepare();
@@ -175,14 +155,6 @@ public class VideoPlayFragment extends Fragment {
         return view;
     }
 
-
-
-    @Override
-    public void onAttach(Context context) {
-        Log.d(TAG, "onAttach: ");
-        super.onAttach(context);
-    }
-
     @Override
     public void onDetach() {
         Log.d(TAG, "onDetach: ");
@@ -192,13 +164,6 @@ public class VideoPlayFragment extends Fragment {
             mediaPlayer.release();
         }
         handler.removeMessages(REFRESH_PROCGRESS);
-    }
-
-    @Override
-    public void onDestroyView() {
-        Log.d(TAG, "onDestroyView: ");
-        super.onDestroyView();
-
     }
 
     public void setResource(Uri resource) {
