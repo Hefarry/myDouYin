@@ -64,9 +64,6 @@ public class FeedDBHelper extends SQLiteOpenHelper {
     public void updateDB(List<Feed> list,Context context){
         FeedDBHelper feedDBHelper = new FeedDBHelper(context);
         SQLiteDatabase db = feedDBHelper.getWritableDatabase();
-        for(Feed item : list ){
-            feedDBHelper.insertOneFeed(item,db);
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             list.sort(new Comparator<Feed>() {
                 @Override
@@ -74,6 +71,14 @@ public class FeedDBHelper extends SQLiteOpenHelper {
                     return o1.getUpdatedAt().compareTo(o2.getUpdatedAt());
                 }
             });
+        }
+        int cnt =0;
+        for(Feed item : list ){
+            feedDBHelper.insertOneFeed(item,db);
+            cnt++;
+            if(cnt>50){
+                break;
+            }
         }
         db.close();
     }
