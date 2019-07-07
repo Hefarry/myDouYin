@@ -1,5 +1,8 @@
 package com.bytedance.minidouyin.newtork;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -7,8 +10,10 @@ import android.view.View;
 
 import com.bytedance.minidouyin.bean.Feed;
 import com.bytedance.minidouyin.bean.FeedResponse;
+import com.bytedance.minidouyin.db.FeedDBHelper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,7 +58,6 @@ public class FetchFeedThreads {
                 }
             }
         });
-
     }
 
     public List<Feed> getList() {

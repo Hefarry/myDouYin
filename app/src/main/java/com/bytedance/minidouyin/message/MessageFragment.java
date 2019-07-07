@@ -1,6 +1,9 @@
 package com.bytedance.minidouyin.message;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -18,8 +21,11 @@ import android.widget.TextView;
 
 import com.bytedance.minidouyin.R;
 import com.bytedance.minidouyin.bean.Feed;
+import com.bytedance.minidouyin.db.FeedContract;
+import com.bytedance.minidouyin.db.FeedDBHelper;
 import com.bytedance.minidouyin.newtork.FetchFeedThreads;
 import com.bytedance.minidouyin.showVideo.VideoFragment;
+import com.bytedance.minidouyin.showVideo.VideoPlayActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,20 +36,8 @@ public class MessageFragment extends Fragment {
     public ListView messageList;
     private ListViewAdapter adapter;
     private List<Feed>feedList = new ArrayList<>();
-
-    private class MyHandler extends Handler {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            super.handleMessage(msg);
-            if(msg.what== FetchFeedThreads.FETCH_BACK){
-                feedList = FetchFeedThreads.getInstance().getList();
-                adapter.setArgs(feedList);
-                adapter.notifyDataSetChanged();
-                Log.d(TAG, "handleMessage: "+feedList.size());
-            }
-        }
-    }
-    private Handler handler = new MessageFragment.MyHandler();
+    private FeedDBHelper dbHelper;
+    private SQLiteDatabase db;
 
     public MessageFragment() {
     }
@@ -61,32 +55,54 @@ public class MessageFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_message, container, false);
         adapter=new ListViewAdapter(getActivity(),feedList);
         messageList = v.findViewById(R.id.messageList);
         messageList.setAdapter(adapter);
-        FetchFeedThreads.getInstance().fetch_request(handler);
         messageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), VideoPlayActivity.class);
+                intent.setData(Uri.parse(feedList.get(i).getVideoUrl()));
+                startActivity(intent);
             }
         });
         Log.d(TAG, "onCreateView: ");
+        refreshList();
         return v;
+    }
+
+    public void refreshList(){
+        Log.d(TAG, "refreshList: ");
+        Cursor cursor = db.rawQuery("select * from "+ FeedContract.tableName
+                +" order by "+FeedContract.updatedAt+" DESC",null);
+        feedList= new ArrayList<>();
+        while(cursor.moveToNext()){
+            Feed f = dbHelper.toFeed(cursor);
+            feedList.add(f);
+        }
+        adapter.setArgs(feedList);
+        adapter.notifyDataSetChanged();
     }
 
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        dbHelper=new FeedDBHelper(getActivity());
+        db = dbHelper.getReadableDatabase();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        db.close();
+        dbHelper.close();
+        db=null;
+        dbHelper=null;
     }
 
     public class ListViewAdapter extends BaseAdapter {
