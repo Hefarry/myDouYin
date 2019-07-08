@@ -8,7 +8,6 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -19,15 +18,16 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bytedance.camera.demo.utils.Utils;
+import com.bytedance.minidouyin.utils.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 
-import static com.bytedance.camera.demo.utils.Utils.MEDIA_TYPE_IMAGE;
-import static com.bytedance.camera.demo.utils.Utils.MEDIA_TYPE_VIDEO;
-import static com.bytedance.camera.demo.utils.Utils.getOutputMediaFile;
+import static com.bytedance.minidouyin.utils.Utils.MEDIA_TYPE_IMAGE;
+import static com.bytedance.minidouyin.utils.Utils.MEDIA_TYPE_VIDEO;
+import static com.bytedance.minidouyin.utils.Utils.getOutputMediaFile;
+
 
 public class CustomCameraActivity extends AppCompatActivity {
     public static final String TAG = "CustomCameraActivity";

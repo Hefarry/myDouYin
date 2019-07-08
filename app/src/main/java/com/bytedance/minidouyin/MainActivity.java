@@ -84,13 +84,6 @@ public class MainActivity extends AppCompatActivity {
         navView.setSelectedItemId(R.id.navigation_dashboard);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-//        TextView home = navView.findViewById(R.id.navigation_home);
-//        TextView dashboard = navView.findViewById(R.id.navigation_dashboard);
-//        TextView me = navView.findViewById(R.id.navigation_notifications);
-//        home.setText("首页");
-//        dashboard.setText("展示板");
-//        me.setText("登录");
-
         MessageFragment videoPlayFragment = MessageFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.palceholder,videoPlayFragment).commit();

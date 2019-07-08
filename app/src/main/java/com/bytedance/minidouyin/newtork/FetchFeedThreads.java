@@ -38,29 +38,6 @@ public class FetchFeedThreads {
         return instance;
     }
 
-    public void fetch_request(final Handler handler){
-        singleThreadExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Retrofit retrofit = RetrofitManager.get(baseUrl);
-                try {
-                    final Response<FeedResponse> response = retrofit.create(IMiniDouyinService.class)
-                            .getFeedResponse().execute();
-                    Log.d(TAG, "run: end Fetch Feed");
-                    if (response.body().isSuccess()) {
-                        list = response.body().getFeeds();
-                        handler.sendMessage(Message.obtain(handler,FETCH_BACK));
-                        Log.d(TAG, "run: Fetch Feed Succeed");
-                    } else {
-                        Log.d(TAG, "run: Fetch Feed Failed");
-                    }
-                }catch (Exception e){
-                    Log.d(TAG, "run: "+e.getMessage());
-                }
-            }
-        });
-    }
-
     public List<Feed> getList() {
         return list;
     }
