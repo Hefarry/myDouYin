@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -93,12 +94,16 @@ public class MyHomeActivity extends AppCompatActivity {
     public void getFeeds(){
         FeedDBHelper helper = new FeedDBHelper(this);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from "+FeedContract.tableName,null);
+        Cursor cursor = db.query(FeedContract.tableName,
+                null,FeedContract.student_id+"=? and "
+            +FeedContract.user_name+"=?",new String[]{id,name},null,null,null);
         while(cursor.moveToNext()){
             Feed f = FeedDBHelper.toFeed(cursor);
-            if(f.getName().compareTo(name)==0&&f.getStudentID().compareTo(id)==0)
-                feedList.add(f);
+//            if(f.getName().compareTo(name)==0&&f.getStudentID().compareTo(id)==0)
+            feedList.add(f);
         }
+        Log.d("Myhome", "getFeeds: "+feedList.size());
+        cursor.close();
         helper.close();
     }
 }

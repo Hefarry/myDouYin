@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 
 import com.bytedance.minidouyin.R;
 import com.bytedance.minidouyin.bean.Feed;
+import com.bytedance.minidouyin.db.FeedDBHelper;
 import com.bytedance.minidouyin.newtork.FetchFeedThreads;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class VideoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_video, container, false);
-        FetchFeedThreads.getInstance().fetch_request(handler);
+        //FetchFeedThreads.getInstance().fetch_request(handler);
         viewPager = view.findViewById(R.id.videoViewPager);
         adapter = new FragmentStatePagerAdapter(getFragmentManager()){
             @Override
@@ -78,6 +79,10 @@ public class VideoFragment extends Fragment {
             }
         };
         viewPager.setAdapter(adapter);
+
+        feedList = FeedDBHelper.refreshList(getActivity());
+
+        adapter.notifyDataSetChanged();
         return view;
     }
 

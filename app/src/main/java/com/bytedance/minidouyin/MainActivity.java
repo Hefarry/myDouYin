@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if(msg.what== FetchFeedThreads.FETCH_BACK){
                 feedList = FetchFeedThreads.getInstance().getList();
-                (new FeedDBHelper(MainActivity.this)).updateDB(
-                        feedList,MainActivity.this);
                 Log.d(TAG, "handleMessage: "+feedList.size());
             }
         }
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.palceholder,videoPlayFragment).commit();
         state=1;
-        FetchFeedThreads.getInstance().fetch_request(handler);
+        FetchFeedThreads.getInstance().fetch_request(handler,this);
     }
 
 }

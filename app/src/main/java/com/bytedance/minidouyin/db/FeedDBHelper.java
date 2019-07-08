@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -49,7 +50,7 @@ public class FeedDBHelper extends SQLiteOpenHelper {
         cv.put(user_name,item.getName());
         cv.put(createdAt,item.getCreateAt());
         cv.put(updatedAt,item.getUpdatedAt());
-        db.replace(tableName,null,cv);
+        db.insert(tableName,null,cv);
     }
 
     public static Feed toFeed(Cursor cursor){
@@ -66,6 +67,8 @@ public class FeedDBHelper extends SQLiteOpenHelper {
     public void updateDB(List<Feed> list,Context context){
         FeedDBHelper feedDBHelper = new FeedDBHelper(context);
         SQLiteDatabase db = feedDBHelper.getWritableDatabase();
+        db.execSQL("drop TABLE "+ tableName);
+        onCreate(db);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             list.sort(new Comparator<Feed>() {
                 @Override
@@ -74,15 +77,24 @@ public class FeedDBHelper extends SQLiteOpenHelper {
                 }
             });
         }
-        int cnt =0;
         for(Feed item : list ){
             feedDBHelper.insertOneFeed(item,db);
-            cnt++;
-            if(cnt>50){
-                break;
-            }
         }
         db.close();
+    }
+
+    public static ArrayList<Feed> refreshList(Context context){
+        Log.d(TAG, "refreshList: ");
+        FeedDBHelper dbHelper = new FeedDBHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from "+ FeedContract.tableName
+                +" order by "+FeedContract.updatedAt+" DESC",null);
+        ArrayList<Feed> feedList= new ArrayList<>();
+        while(cursor.moveToNext()){
+            Feed f = dbHelper.toFeed(cursor);
+            feedList.add(f);
+        }
+        return feedList;
     }
 
     @Override

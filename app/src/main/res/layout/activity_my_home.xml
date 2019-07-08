@@ -12,7 +12,7 @@
         android:layout_marginTop="20dp"
         android:id="@+id/buttons"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_below="@+id/header">
 
         <TextView
@@ -74,11 +74,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="44dp"
             android:layout_marginBottom="44dp"
+            android:backgroundTint="@android:color/holo_orange_light"
             android:clickable="true"
             android:foregroundGravity="bottom|center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@android:drawable/ic_input_add" />
+            app:srcCompat="@drawable/icon_blacksend_touch" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
