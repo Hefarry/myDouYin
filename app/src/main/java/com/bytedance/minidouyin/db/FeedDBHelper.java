@@ -20,7 +20,7 @@ import java.util.List;
 public class FeedDBHelper extends SQLiteOpenHelper {
     // TODO 定义数据库名、版本；创建数据库
     public static final String DATABASE_NAME = "FeedDB.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String TAG = "SQL";
 
     public FeedDBHelper(@Nullable Context context) {
@@ -37,6 +37,8 @@ public class FeedDBHelper extends SQLiteOpenHelper {
                 + FeedContract.updatedAt + " TEXT, "
                 + FeedContract.image_url + " TEXT, "
                 + FeedContract.video_url + " TEXT)");
+        db.execSQL("create index "+student_id_ind+" on "+tableName+"("+student_id+")");
+        db.execSQL("create index "+user_name_ind+" on "+tableName+"("+user_name+")");
     }
 
     public void insertOneFeed(Feed item,SQLiteDatabase db){
@@ -87,6 +89,10 @@ public class FeedDBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         for(int i = oldVersion;i<newVersion;i++){
             switch (i){
+                case 1:
+                    db.execSQL("create index "+student_id_ind+" on "+tableName+"("+student_id+")");
+                    db.execSQL("create index "+user_name_ind+" on "+tableName+"("+user_name+")");
+                    break;
                 default:
             }
         }

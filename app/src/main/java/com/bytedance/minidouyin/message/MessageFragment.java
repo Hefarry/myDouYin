@@ -26,6 +26,7 @@ import com.bytedance.minidouyin.db.FeedDBHelper;
 import com.bytedance.minidouyin.newtork.FetchFeedThreads;
 import com.bytedance.minidouyin.showVideo.VideoFragment;
 import com.bytedance.minidouyin.showVideo.VideoPlayActivity;
+import com.bytedance.minidouyin.takeVideo.MyHomeActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +66,9 @@ public class MessageFragment extends Fragment {
         messageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity(), VideoPlayActivity.class);
-                intent.setData(Uri.parse(feedList.get(i).getVideoUrl()));
+                Intent intent = new Intent(getActivity(), MyHomeActivity.class);
+                intent.putExtra(MyHomeActivity.LOGINNAME,feedList.get(i).getName());
+                intent.putExtra(MyHomeActivity.LOGINID,feedList.get(i).getStudentID());
                 startActivity(intent);
             }
         });
