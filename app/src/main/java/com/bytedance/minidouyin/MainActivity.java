@@ -26,20 +26,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private int state=-1;
-    private List<Feed> feedList = new ArrayList<>();
     private static final String TAG = "Main";
-
-    private class MyHandler extends Handler {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            super.handleMessage(msg);
-            if(msg.what== FetchFeedThreads.FETCH_BACK){
-                feedList = FetchFeedThreads.getInstance().getList();
-                Log.d(TAG, "handleMessage: "+feedList.size());
-            }
-        }
-    }
-    private Handler handler = new MyHandler();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -81,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
+
         navView.setSelectedItemId(R.id.navigation_dashboard);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -88,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(
                 R.id.palceholder,videoPlayFragment).commit();
         state=1;
-        FetchFeedThreads.getInstance().fetch_request(handler,this);
     }
 
 }
