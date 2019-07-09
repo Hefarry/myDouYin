@@ -48,13 +48,17 @@ public class VideoPlayFragment extends Fragment {
             super.handleMessage(msg);
             if(msg.what==REFRESH_PROCGRESS){
 //                Log.d(TAG, "handleMessage: ");
-                double cur = mediaPlayer.getCurrentPosition();
-                double len = mediaPlayer.getDuration();
-                double process = cur/len*100.0;
-                seekBar.setProgress((int)process);
-                handler.removeMessages(REFRESH_PROCGRESS);
-                handler.sendMessageDelayed(Message.obtain(handler,REFRESH_PROCGRESS),
-                        1000);
+                try {
+                    double cur = mediaPlayer.getCurrentPosition();
+                    double len = mediaPlayer.getDuration();
+                    double process = cur / len * 100.0;
+                    seekBar.setProgress((int) process);
+                    handler.removeMessages(REFRESH_PROCGRESS);
+                    handler.sendMessageDelayed(Message.obtain(handler, REFRESH_PROCGRESS),
+                            1000);
+                }catch (Exception e){
+                    Log.d(TAG, "handleMessage: "+e.getMessage());
+                }
             }
         }
     };
@@ -124,10 +128,14 @@ public class VideoPlayFragment extends Fragment {
                 if(!fromUser){
                     return;
                 }
-                if (mediaPlayer==null)  return;
-                double len = mediaPlayer.getDuration();
-                double cur = (progress*len/100.0);
-                mediaPlayer.seekTo((int)cur);
+                try {
+                    double len = mediaPlayer.getDuration();
+                    double cur = (progress * len / 100.0);
+                    Log.d(TAG, "onProgressChanged: " + len + " " + (int) cur);
+                    mediaPlayer.seekTo((int) cur);
+                }catch (Exception e){
+                    Log.d(TAG, "onProgressChanged: "+e.getMessage());
+                }
             }
 
             @Override

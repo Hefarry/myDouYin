@@ -1,10 +1,5 @@
 package com.bytedance.minidouyin.takeVideo;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,6 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bytedance.minidouyin.R;
@@ -36,12 +36,19 @@ public class MyHomeActivity extends AppCompatActivity {
     String id;
     RecyclerView mRv;
     private List<Feed> feedList = new ArrayList<>();
+    View mFloatingActionBar;
+
+    FeedDBHelper helper = new FeedDBHelper(this);
+    SQLiteDatabase db;
+
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
         }
     }
+
+    private RecyclerView.Adapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,22 +62,16 @@ public class MyHomeActivity extends AppCompatActivity {
         myid.setText(id);
         myname.setText(name);
 
+        db = helper.getReadableDatabase();
+
         mRv = findViewById(R.id.myrecycleview);
         mRv.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerView.Adapter adapter = new RecyclerView.Adapter() {
+        adapter = new RecyclerView.Adapter() {
             @NonNull @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, final int i) {
                 ImageView imageView = new ImageView(viewGroup.getContext());
                 imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 imageView.setAdjustViewBounds(true);
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent showVideoIntent = new Intent(MyHomeActivity.this, VideoPlayActivity.class);
-                        showVideoIntent.setData(Uri.parse(feedList.get(i).getVideoUrl()));
-                        startActivity(showVideoIntent);
-                    }
-                });
                 return new MyViewHolder(imageView);
             }
 
@@ -80,6 +81,14 @@ public class MyHomeActivity extends AppCompatActivity {
                 iv.setPadding(10,30,10,10);
                 String url = feedList.get(i).getImgUrl();
                 Glide.with(iv.getContext()).load(url).into(iv);
+                iv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent showVideoIntent = new Intent(MyHomeActivity.this, VideoPlayActivity.class);
+                        showVideoIntent.setData(Uri.parse(feedList.get(i).getVideoUrl()));
+                        startActivity(showVideoIntent);
+                    }
+                });
             }
 
             @Override public int getItemCount() {
@@ -89,14 +98,37 @@ public class MyHomeActivity extends AppCompatActivity {
         mRv.setAdapter(adapter);
         getFeeds();
         adapter.notifyDataSetChanged();
+
+        //悬浮按钮
+        mFloatingActionBar = findViewById(R.id.floatingActionButton);
+        mFloatingActionBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyHomeActivity.this, TakeVideoActivity.class);
+                intent.putExtra(TakeVideoActivity.LOGINID,myid.getText().toString());
+                intent.putExtra(TakeVideoActivity.LOGINNAME,myname.getText().toString());
+                startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getFeeds();
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        helper.close();
     }
 
     public void getFeeds(){
-        FeedDBHelper helper = new FeedDBHelper(this);
-        SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(FeedContract.tableName,
-                null,FeedContract.student_id+"=? and "
-            +FeedContract.user_name+"=?",new String[]{id,name},null,null,null);
+                null, FeedContract.student_id+"=? and "
+            + FeedContract.user_name+"=?",new String[]{id,name},null,null,null);
         while(cursor.moveToNext()){
             Feed f = FeedDBHelper.toFeed(cursor);
 //            if(f.getName().compareTo(name)==0&&f.getStudentID().compareTo(id)==0)
@@ -104,6 +136,5 @@ public class MyHomeActivity extends AppCompatActivity {
         }
         Log.d("Myhome", "getFeeds: "+feedList.size());
         cursor.close();
-        helper.close();
     }
 }

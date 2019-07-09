@@ -1,4 +1,4 @@
-package com.bytedance.minidouyin;
+package com.bytedance.minidouyin.takeVideo;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,6 +18,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bytedance.minidouyin.R;
 import com.bytedance.minidouyin.utils.Utils;
 
 import java.io.File;
@@ -28,8 +29,7 @@ import static com.bytedance.minidouyin.utils.Utils.MEDIA_TYPE_IMAGE;
 import static com.bytedance.minidouyin.utils.Utils.MEDIA_TYPE_VIDEO;
 import static com.bytedance.minidouyin.utils.Utils.getOutputMediaFile;
 
-
-public class CustomCameraActivity extends AppCompatActivity {
+public class CustomcameraActivity extends AppCompatActivity {
     public static final String TAG = "CustomCameraActivity";
 
     private SurfaceView mSurfaceView;
@@ -252,7 +252,7 @@ public class CustomCameraActivity extends AppCompatActivity {
         }
     }
 
-    public void saveBitmap(File f,Bitmap bm) {
+    public void saveBitmap(File f, Bitmap bm) {
         if (f.exists()) {
             f.delete();
         }

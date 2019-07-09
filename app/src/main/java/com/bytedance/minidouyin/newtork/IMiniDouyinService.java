@@ -30,7 +30,7 @@ public interface IMiniDouyinService {
     //}
     @Multipart
     @POST("/mini_douyin/invoke/video")
-    Call<PostVideoResponse> postVideoResponse(@Query("student_id") int studentId,
+    Call<PostVideoResponse> postVideoResponse(@Query("student_id") String studentId,
                                               @Query("user_name") String username,
                                               @Part MultipartBody.Part cover_image,
                                               @Part MultipartBody.Part video);

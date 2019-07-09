@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.bytedance.minidouyin.newtork.FetchFeedService;
 import com.bytedance.minidouyin.newtork.FetchFeedThreads;
+import com.bytedance.minidouyin.newtork.MyResultReceiver;
 
 public class GateWay extends AppCompatActivity {
     protected LottieAnimationView animationView;
@@ -23,7 +25,7 @@ public class GateWay extends AppCompatActivity {
         @Override
         public void handleMessage(android.os.Message msg) {
             super.handleMessage(msg);
-            if(msg.what== FetchFeedThreads.FETCH_BACK){
+            if(msg.what== FetchFeedThreads.FETCH_BACK||msg.what== MyResultReceiver.RECEIVE_FEED){
                 boolean flg = true;
                 for(int i=0;i<permissions.length;i++){
                     if(checkSelfPermission(permissions[i])!= PackageManager.PERMISSION_GRANTED){
@@ -41,13 +43,16 @@ public class GateWay extends AppCompatActivity {
         }
     }
     private Handler handler = new MyHandler();
+    MyResultReceiver resultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gate_way);
         animationView = findViewById(R.id.animation_view);
-        FetchFeedThreads.getInstance().fetch_request(handler,this);
+        //FetchFeedThreads.getInstance().fetch_request(handler,this);
+        resultReceiver=new MyResultReceiver(handler);
+        FetchFeedService.startFetchFeed(this,resultReceiver,null);
     }
 
     @Override
